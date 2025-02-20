@@ -4,3 +4,22 @@
     line-height: 1.5;
     box-sizing: border-box;
 }
+
+.tictactoe-grid {
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    height: 300px;
+    width: 300px;
+    background-color: #f7f7f7;
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.row > button {
+    border: solid 1px grey;
+}
