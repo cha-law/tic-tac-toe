@@ -14,14 +14,45 @@ function Board() {
     const getBoard = () => board; 
 
     const outputBoard = () => {
-        board.forEach((row) => {
-            row.forEach((column) => {
-                console.log(column.getMarkValue())
-            })
-        });
+        const boardWithCells = getBoardWithCells();
+        console.log(boardWithCells);
     }
 
-    return {getBoard, outputBoard};
+    const getBoardWithCells = () => {
+        const boardWithCells = board.map((row) => row.map((cell) => cell.getMarkValue()));
+        return boardWithCells;
+    }
+
+    const addMark = (currentPlayerMark, row, column) => {
+        board[column][row].addMark(currentPlayerMark);
+        outputBoard();
+    }
+
+    const winCheck = () => {
+        const boardWithCells = getBoardWithCells();
+        // Check the rows
+        boardWithCells.forEach((row) => {
+            if (((row[0] === row[1]) && (row[1] === row[2])) && (row[0] != "")) {
+                game.endCurrentGame(row[0]);
+            }
+        })
+
+        let i = 0;
+        // Check the columns
+        boardWithCells[0].forEach((cell) => {
+            if (((cell === boardWithCells[1][i]) && (boardWithCells[1][i] === boardWithCells[2][i])) && (boardWithCells[1][i] != "")) {
+                game.endCurrentGame(cell);
+            }
+            i++;
+        });
+
+        // Check the diagonals
+        if ((((boardWithCells[0][0] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][2])) || ((boardWithCells[0][2] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][0]))) && (boardWithCells[1][1] != "")) {
+            game.endCurrentGame(boardWithCells[1][1]);
+        }
+    }
+
+    return {getBoard, outputBoard, addMark, winCheck};
 }
 
 
@@ -30,16 +61,18 @@ function Cell() {
 
     const addMark = (player) => {
         if (value != "") return;
-        value = player.mark;
+        value = player;
     }
 
     const getMarkValue = () => value;
+
     return {addMark, getMarkValue};
 }
 
 
-function GameController(player1Name = "Player 1", player2Name = "Player Two") {
+function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     const board = Board();
+    let winner = false;
 
     // Players
     const players = [
@@ -62,8 +95,16 @@ function GameController(player1Name = "Player 1", player2Name = "Player Two") {
 
     const getCurrentPlayer = () => currentPlayer;
 
+    const endCurrentGame = (winnerMark) => {
+        console.log("Winner! " + winnerMark);
+        winner = true;
+    }
+
     const newRound = () => {
-        board.outputBoard();
+        // Ensure there isn't a winner.
+        if (winner === true) {
+            return
+        }
         console.log(`${getCurrentPlayer().name}'s turn!`);
 
         currentColumn = prompt("Enter column (0-2): ");
@@ -73,18 +114,20 @@ function GameController(player1Name = "Player 1", player2Name = "Player Two") {
     }
 
     const playRound = (row, column) => {
-        const board = Board().getBoard();
-        board[column][row].addMark(getCurrentPlayer().mark);
-        // Win check needed
+        board.addMark(getCurrentPlayer().mark, row, column);
+        board.winCheck();
         changePlayerTurn();
         newRound();
     }
 
-    // Start the game.
-    //newRound();
+    return {changePlayerTurn, getCurrentPlayer, endCurrentGame, newRound, playRound};
+}
 
-    return {changePlayerTurn, getCurrentPlayer, newRound, playRound};
+function ScreenController() {
+
 }
 
 const game = GameController();
 
+// Initialize the game.
+game.newRound()
