@@ -14,8 +14,7 @@ function Board() {
     const getBoard = () => board; 
 
     const outputBoard = () => {
-        const boardWithCells = getBoardWithCells();
-        console.log(boardWithCells);
+        console.log(getBoardWithCells());
     }
 
     const getBoardWithCells = () => {
@@ -24,6 +23,7 @@ function Board() {
     }
 
     const addMark = (currentPlayerMark, row, column) => {
+        if (board[row][column].getMarkValue() != "") {return "Taken"};
         board[row][column].addMark(currentPlayerMark);
         outputBoard();
     }
@@ -102,16 +102,17 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
 
     const endCurrentGame = (winnerMark) => {
         console.log("Winner! " + winnerMark);
-        winner = true;
+        screen.removeButtonEventListeners();
     }
 
     const playRound = (row, column) => {
         // Adding the mark, and checking if it returns "Taken" so it does not change the turn or check for wins
         if ((board.addMark(getCurrentPlayer().mark, row, column)) === "Taken") {
-            return;
-        };
-        board.winCheck();
-        changePlayerTurn();
+            return "Taken";
+        } else {
+            board.winCheck();
+            changePlayerTurn();
+        }
     }
 
     return {changePlayerTurn, getCurrentPlayer, endCurrentGame, playRound};
@@ -123,18 +124,42 @@ function ScreenController() {
         const cellClicked = event.target;
         const cellRow = cellClicked.parentElement.parentElement.dataset.row;
         const cellColumn = cellClicked.dataset.column;
+        const currentPlayer = game.getCurrentPlayer();
 
-        game.playRound(cellRow, cellColumn);
+        if (game.playRound(cellRow, cellColumn) === "Taken") return;
+
+        // Adding the mark to the display
+        let newImg = document.createElement("img");
+
+        if (currentPlayer.mark === "X") {
+            newImg.src = "./images/close.svg";
+        } else {
+            newImg.src = "./images/circle-outline.svg";
+        }
+
+        cellClicked.appendChild(newImg);
     };
 
-    // Add event listeners onto displayed cells
+
     const buttons = document.querySelectorAll(".tictactoe-button");
+    // Adding the event listeners when a new game starts.
+    const addButtonEventListeners = () => {
+        buttons.forEach((button) => {
+            button.addEventListener("click", markAdded);
+        });
+    }
 
-    buttons.forEach((button) => {
-        button.addEventListener("click", markAdded);
-    });
+    // Removing event listeners for when a game has ended
+    const removeButtonEventListeners = () => {
+        buttons.forEach((button) => {
+            button.removeEventListener("click", markAdded);
+        });
+    }
 
-    return {markAdded};
+    // Initialize buttons
+    addButtonEventListeners();
+
+    return {markAdded, removeButtonEventListeners};
 }
 
 const game = GameController();
