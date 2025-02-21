@@ -9,21 +9,28 @@
     <script src="./script.js" defer></script>
 </head>
 <body>
-    <div class="tictactoe-grid">
-        <div class="row" id="0">
-            <button id="0"></button>
-            <button id="1"></button>
-            <button id="2"></button>
+    <div class="tictactoe-wrapper">
+        <h2>Tic Tac Toe</h2>
+        <div>
+            <p class="player-one-name current-player">Player 1</p>
+            <p class="player-two-name">Player 2</p>
         </div>
-        <div class="row" id="1">
-            <button id="0"></button>
-            <button id="1"></button>
-            <button id="2"></button>
-        </div>
-        <div class="row" id="2">
-            <button id="0"></button>
-            <button id="1"></button>
-            <button id="2"></button>
+        <div class="tictactoe-grid">
+            <div class="row" data-row="0">
+                <button data-column="0"></button>
+                <button data-column="1"></button>
+                <button data-column="2"></button>
+            </div>
+            <div class="row" data-row="1">
+                <button data-column="0"></button>
+                <button data-column="1"></button>
+                <button data-column="2"></button>
+            </div>
+            <div class="row" data-row="2">
+                <button data-column="0"></button>
+                <button data-column="1"></button>
+                <button data-column="2"></button>
+            </div>
         </div>
     </div>
 </body>

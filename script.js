@@ -24,7 +24,8 @@ function Board() {
     }
 
     const addMark = (currentPlayerMark, row, column) => {
-        board[column][row].addMark(currentPlayerMark);
+        if (board[row][column].getMarkValue() != "") return "Taken";
+        board[row][column].addMark(currentPlayerMark);
         outputBoard();
     }
 
@@ -89,8 +90,13 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     let currentPlayer = players[0];
 
     const changePlayerTurn = () => {
-        if (currentPlayer === players[0]) {currentPlayer = players[1]}
+        const turnText = document.querySelector(".turn");
+        if (currentPlayer === players[0]) {currentPlayer = players[1];} 
         else {currentPlayer = players[0]};
+
+        // Switch the display showing who's turn it is.
+        document.querySelector(".player-one-name").classList.toggle("current-player");
+        document.querySelector(".player-two-name").classList.toggle("current-player");
     }
 
     const getCurrentPlayer = () => currentPlayer;
@@ -105,29 +111,45 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
         if (winner === true) {
             return
         }
+        // Need to change top text 
         console.log(`${getCurrentPlayer().name}'s turn!`);
-
-        currentColumn = prompt("Enter column (0-2): ");
-        currentRow = prompt("Enter row (0-2): ");
-
         playRound(currentRow, currentColumn);
     }
 
     const playRound = (row, column) => {
-        board.addMark(getCurrentPlayer().mark, row, column);
+        // Adding the mark, and checking if it returns "Taken" so it does not change the turn or check for wins
+        if ((board.addMark(getCurrentPlayer().mark, row, column)) === "Taken") {
+            return;
+        };
         board.winCheck();
         changePlayerTurn();
-        newRound();
     }
 
     return {changePlayerTurn, getCurrentPlayer, endCurrentGame, newRound, playRound};
 }
 
 function ScreenController() {
+    const gameWrapper = document.querySelector(".tictactoe-wrapper");
 
+    const gridRows = document.querySelectorAll(".tictactoe-grid > div");
+
+    const markAdded = (event) => {
+        const cellClicked = event.target;
+        const cellRow = cellClicked.parentElement.dataset.row;
+        const cellColumn = cellClicked.dataset.column;
+
+        game.playRound(cellRow, cellColumn);
+    };
+
+    // Add event listeners onto displayed cells
+    gridRows.forEach((row) => {
+        for (const cell of row.children) {
+            cell.addEventListener("click", markAdded);
+        }
+    });
+
+    return {markAdded};
 }
 
 const game = GameController();
-
-// Initialize the game.
-game.newRound()
+const screen = ScreenController();

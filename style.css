@@ -23,3 +23,7 @@
 .row > button {
     border: solid 1px grey;
 }
+
+.current-player {
+    background-color: #999999;
+}
