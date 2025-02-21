@@ -10,28 +10,29 @@
 </head>
 <body>
     <div class="tictactoe-wrapper">
-        <h2>Tic Tac Toe</h2>
-        <div>
-            <p class="player-one-name current-player">Player 1</p>
-            <p class="player-two-name">Player 2</p>
+        <h1>Tic Tac Toe</h1>
+        <div class="player-names">
+            <p class="player-one-name"><img src="./images/close.svg" alt="">Player 1</p>
+            <p class="player-two-name waiting-player"><img src="./images/circle-outline.svg" alt="">Player 2</p>
         </div>
-        <div class="tictactoe-grid">
-            <div class="row" data-row="0">
-                <button data-column="0"></button>
-                <button data-column="1"></button>
-                <button data-column="2"></button>
-            </div>
-            <div class="row" data-row="1">
-                <button data-column="0"></button>
-                <button data-column="1"></button>
-                <button data-column="2"></button>
-            </div>
-            <div class="row" data-row="2">
-                <button data-column="0"></button>
-                <button data-column="1"></button>
-                <button data-column="2"></button>
-            </div>
-        </div>
+
+        <table class="tictactoe-grid">
+            <tr class="row" data-row="0">
+                <td><button class="tictactoe-button" data-column="0"></button></td>
+                <td><button class="tictactoe-button" data-column="1"></button></td>
+                <td><button class="tictactoe-button" data-column="2"></button></td>
+            </tr>
+            <tr class="row" data-row="1">
+                <td><button class="tictactoe-button" data-column="0"></button></td>
+                <td><button class="tictactoe-button" data-column="1"></button></td>
+                <td><button class="tictactoe-button" data-column="2"></button></td>
+            </tr>
+            <tr class="row" data-row="2">
+                <td><button class="tictactoe-button" data-column="0"></button></td>
+                <td><button class="tictactoe-button" data-column="1"></button></td>
+                <td><button class="tictactoe-button" data-column="2"></button></td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

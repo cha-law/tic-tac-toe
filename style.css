@@ -3,27 +3,75 @@
     padding: 0;
     line-height: 1.5;
     box-sizing: border-box;
+    font-family: Verdana, sans-serif;
 }
 
-.tictactoe-grid {
-    display: grid;
-    grid-template-rows: repeat(3, 1fr);
-    height: 300px;
-    width: 300px;
+body {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e1ecf0;
+}
+
+.tictactoe-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
     background-color: #f7f7f7;
     padding: 16px;
     border-radius: 12px;
+    gap: 16px;
 }
 
-.row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+table {
+    border-spacing: 8px;
 }
 
-.row > button {
-    border: solid 1px grey;
+td {
+    height: 100px;
+    width: 100px;
+    line-height: 0; 
 }
 
-.current-player {
-    background-color: #999999;
+td > button {
+    border: none;
+    background-color: #cfdcec;
+    height: 100px;
+    width: 100px;
+    transition: 0.2s;
+}
+
+button:hover {
+    background-color: #c3d4eb;
+    transition: 0.2s;
+}
+
+.player-names {
+    display: flex;
+    justify-content: space-between;
+    width: 316px;
+}
+.player-names > p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    background-color: #9cddc4;
+    color: #487966;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.player-names > p > img {
+    width: 24px;
+}
+
+.player-names > .waiting-player {
+    background: none;
+    padding: 8px;
+    transition: 0.2s;
 }
