@@ -130,6 +130,7 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     const getCurrentPlayer = () => currentPlayer;
 
     const endCurrentGameWin = (winnerMark) => {
+        screen.colourAllYellow();
         screen.removeButtonEventListeners();
 
         // Add win text with correct winner
@@ -216,6 +217,10 @@ function ScreenController() {
             if (button.classList.contains("greyed")) {
                 button.classList.toggle("greyed");
             }
+            // Remove colours for winning tiles
+            if (button.classList.contains("win")) {
+                button.classList.toggle("win");
+            }
         });
 
         // Refresh board
@@ -227,6 +232,12 @@ function ScreenController() {
         buttons.forEach((button) => {
             button.removeEventListener("click", markAdded);
         });
+    }
+
+    const colourAllYellow = () => {
+        buttons.forEach((button) => {
+            button.classList.toggle("win");
+        })
     }
 
     const colourAllGrey = () => {
@@ -261,7 +272,7 @@ function ScreenController() {
     // Initialize buttons
     resetGame();
 
-    return {removeButtonEventListeners, colourAllGrey, addNewGameButton, addWinText, addDrawText};
+    return {removeButtonEventListeners, colourAllYellow, colourAllGrey, addNewGameButton, addWinText, addDrawText};
 }
 
 const game = GameController();
