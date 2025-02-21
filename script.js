@@ -25,10 +25,14 @@ function Board() {
 
     const winCheck = () => {
         const boardWithCells = getBoardWithCells();
+        // Used to prevent a win and draw happening
+        let win = false;
+
         // Check the rows
         boardWithCells.forEach((row) => {
             if (((row[0] === row[1]) && (row[1] === row[2])) && (row[0] != "")) {
                 game.endCurrentGameWin(row[0]);
+                win = true;
             }
         })
 
@@ -37,6 +41,7 @@ function Board() {
         boardWithCells[0].forEach((cell) => {
             if (((cell === boardWithCells[1][i]) && (boardWithCells[1][i] === boardWithCells[2][i])) && (boardWithCells[1][i] != "")) {
                 game.endCurrentGameWin(cell);
+                win = true;
             }
             i++;
         });
@@ -44,10 +49,11 @@ function Board() {
         // Check the diagonals
         if ((((boardWithCells[0][0] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][2])) || ((boardWithCells[0][2] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][0]))) && (boardWithCells[1][1] != "")) {
             game.endCurrentGameWin(boardWithCells[1][1]);
+            win = true;
         }
 
         // No win found, check for a draw instead
-        drawCheck();
+        if (win === false) drawCheck();
     }
 
     const drawCheck = () => {
@@ -134,7 +140,6 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     }
 
     const endCurrentGameDraw = () => {
-        console.log("Draw")
         screen.colourAllGrey();
 
         screen.removeButtonEventListeners();
@@ -206,6 +211,11 @@ function ScreenController() {
         // Add event listeners
         buttons.forEach((button) => {
             button.addEventListener("click", markAdded);
+
+            // Remove greyed out features if needed
+            if (button.classList.contains("greyed")) {
+                button.classList.toggle("greyed");
+            }
         });
 
         // Refresh board
@@ -251,7 +261,7 @@ function ScreenController() {
     // Initialize buttons
     resetGame();
 
-    return {removeButtonEventListeners, colourAllGrey, addNewGameButton, addWinText};
+    return {removeButtonEventListeners, colourAllGrey, addNewGameButton, addWinText, addDrawText};
 }
 
 const game = GameController();
