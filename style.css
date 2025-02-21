@@ -11,8 +11,16 @@ body {
     width: 100vw;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    flex-direction: column;
     background-color: #e1ecf0;
+}
+
+body > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .tictactoe-wrapper {
@@ -108,4 +116,16 @@ button:hover {
 
 .win:hover {
     background-color: #e1e4cf;
+}
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #919191;
+    width: 100vw;
+    height: 10vh;
+}
+footer a {
+    color: white;
 }
