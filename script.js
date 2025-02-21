@@ -13,10 +13,6 @@ function Board() {
     // Function to retrieve the entire board.
     const getBoard = () => board; 
 
-    const outputBoard = () => {
-        console.log(getBoardWithCells());
-    }
-
     const getBoardWithCells = () => {
         const boardWithCells = board.map((row) => row.map((cell) => cell.getMarkValue()));
         return boardWithCells;
@@ -25,7 +21,6 @@ function Board() {
     const addMark = (currentPlayerMark, row, column) => {
         if (board[row][column].getMarkValue() != "") {return "Taken"};
         board[row][column].addMark(currentPlayerMark);
-        outputBoard();
     }
 
     const winCheck = () => {
@@ -33,7 +28,7 @@ function Board() {
         // Check the rows
         boardWithCells.forEach((row) => {
             if (((row[0] === row[1]) && (row[1] === row[2])) && (row[0] != "")) {
-                game.endCurrentGame(row[0]);
+                game.endCurrentGameWin(row[0]);
             }
         })
 
@@ -41,18 +36,44 @@ function Board() {
         // Check the columns
         boardWithCells[0].forEach((cell) => {
             if (((cell === boardWithCells[1][i]) && (boardWithCells[1][i] === boardWithCells[2][i])) && (boardWithCells[1][i] != "")) {
-                game.endCurrentGame(cell);
+                game.endCurrentGameWin(cell);
             }
             i++;
         });
 
         // Check the diagonals
         if ((((boardWithCells[0][0] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][2])) || ((boardWithCells[0][2] === boardWithCells[1][1]) && (boardWithCells[1][1] === boardWithCells[2][0]))) && (boardWithCells[1][1] != "")) {
-            game.endCurrentGame(boardWithCells[1][1]);
+            game.endCurrentGameWin(boardWithCells[1][1]);
+        }
+
+        // No win found, check for a draw instead
+        drawCheck();
+    }
+
+    const drawCheck = () => {
+        let emptyValue = false;
+        board.forEach((row) => {
+            row.forEach((cell) => {
+                if (cell.getMarkValue() === "") {
+                    emptyValue = true;
+                }
+            })
+        })
+        // All cells checked, no spaces left
+        if (emptyValue === false) {
+            game.endCurrentGameDraw();
         }
     }
 
-    return {getBoard, outputBoard, addMark, winCheck};
+    const refreshBoard = () => {
+        board.forEach((row) => {
+            row.forEach((cell) => {
+                cell.clearMark();
+            });
+        });
+    }
+
+    return {getBoard, addMark, winCheck, drawCheck, refreshBoard};
 }
 
 
@@ -64,15 +85,18 @@ function Cell() {
         value = player;
     }
 
+    const clearMark = () => {
+        value = "";
+    }
+
     const getMarkValue = () => value;
 
-    return {addMark, getMarkValue};
+    return {addMark, getMarkValue, clearMark};
 }
 
 
 function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     const board = Board();
-    let winner = false;
 
     // Players
     const players = [
@@ -89,7 +113,6 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
     let currentPlayer = players[0];
 
     const changePlayerTurn = () => {
-        const turnText = document.querySelector(".turn");
         if (currentPlayer === players[0]) {currentPlayer = players[1];} 
         else {currentPlayer = players[0]};
 
@@ -100,9 +123,23 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
 
     const getCurrentPlayer = () => currentPlayer;
 
-    const endCurrentGame = (winnerMark) => {
-        console.log("Winner! " + winnerMark);
+    const endCurrentGameWin = (winnerMark) => {
         screen.removeButtonEventListeners();
+
+        // Add win text with correct winner
+        if (winnerMark === "X") {screen.addWinText(players[0]);}
+        else {screen.addWinText(players[1]);}
+
+        screen.addNewGameButton();
+    }
+
+    const endCurrentGameDraw = () => {
+        console.log("Draw")
+        screen.colourAllGrey();
+
+        screen.removeButtonEventListeners();
+        screen.addDrawText();
+        screen.addNewGameButton();
     }
 
     const playRound = (row, column) => {
@@ -115,7 +152,11 @@ function GameController(player1Name = "Player 1", player2Name = "Player 2") {
         }
     }
 
-    return {changePlayerTurn, getCurrentPlayer, endCurrentGame, playRound};
+    const refreshBoard = () => {
+        board.refreshBoard();
+    }
+
+    return {changePlayerTurn, getCurrentPlayer, endCurrentGameWin, endCurrentGameDraw, playRound, refreshBoard};
 }
 
 function ScreenController() {
@@ -130,6 +171,7 @@ function ScreenController() {
 
         // Adding the mark to the display
         let newImg = document.createElement("img");
+        newImg.classList.toggle("tictactoe-img");
 
         if (currentPlayer.mark === "X") {
             newImg.src = "./images/close.svg";
@@ -142,11 +184,32 @@ function ScreenController() {
 
 
     const buttons = document.querySelectorAll(".tictactoe-button");
-    // Adding the event listeners when a new game starts.
-    const addButtonEventListeners = () => {
+    // Changing button styles and event listeners
+    const resetGame = () => {
+        const text = document.querySelector(".win-content > p");
+        if (text) text.remove();
+
+        // Remove new game button
+        const newGameButton = document.querySelector(".new-game-button");
+        if (newGameButton) newGameButton.remove();
+
+        // Reset turn to player 1
+        const currentPlayer = game.getCurrentPlayer();
+        if (currentPlayer.mark === "O") game.changePlayerTurn();
+
+        // Remove previous game marks in the tictactoe grid
+        const images = document.querySelectorAll(".tictactoe-img");
+        images.forEach((img) => {
+            img.remove();
+        })
+
+        // Add event listeners
         buttons.forEach((button) => {
             button.addEventListener("click", markAdded);
         });
+
+        // Refresh board
+        game.refreshBoard();
     }
 
     // Removing event listeners for when a game has ended
@@ -156,10 +219,39 @@ function ScreenController() {
         });
     }
 
-    // Initialize buttons
-    addButtonEventListeners();
+    const colourAllGrey = () => {
+        buttons.forEach((button) => {
+            button.classList.toggle("greyed");
+        })
+    }
 
-    return {markAdded, removeButtonEventListeners};
+    const addWinText = (winner) => {
+        const winContent = document.querySelector(".win-content");
+        let newText = document.createElement("p");
+        newText.textContent = `Winner: ${winner.name} (${winner.mark})`;
+        winContent.appendChild(newText);
+    }
+
+    const addDrawText = () => {
+        const winContent = document.querySelector(".win-content");
+        let newText = document.createElement("p");
+        newText.textContent = "Draw";
+        winContent.appendChild(newText);
+    }
+
+    const addNewGameButton = () => {
+        const winContent = document.querySelector(".win-content");
+        let newButton = document.createElement("button");
+        newButton.textContent = "Start new game";
+        newButton.classList.toggle("new-game-button");
+        newButton.addEventListener("click", resetGame);
+        winContent.appendChild(newButton);
+    }
+
+    // Initialize buttons
+    resetGame();
+
+    return {removeButtonEventListeners, colourAllGrey, addNewGameButton, addWinText};
 }
 
 const game = GameController();

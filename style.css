@@ -45,6 +45,11 @@ td > button {
     padding: 20px;
 }
 
+td > button.greyed {
+    transition: 0.2s;
+    background-color: #bdbdbd;
+}
+
 button:hover {
     background-color: #c3d4eb;
     transition: 0.2s;
@@ -75,4 +80,24 @@ button:hover {
     background: none;
     padding: 8px;
     transition: 0.2s;
+}
+
+.new-game-button {
+    border: none;
+    padding: 8px;
+    font-weight: 700;
+    color: #487966;
+    background-color: #cfdcec;
+    border-radius: 8px;
+}
+
+.new-game-button:hover{
+    cursor: pointer;
+}
+
+.win-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
 }
